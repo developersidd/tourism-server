@@ -47,6 +47,11 @@ const tour_collection_data = database.collection("tour_collection");
 const clicked_collection = database.collection("clicked_collection");
 const user_collection = database.collection("user_collection");
 
+
+app.get("/", (req, res) => {
+    res.json("Running");
+});
+
 // get all booked tour
 app.get("/ordered_tour/:email", verifyToken, async (req, res) => {
     const email = req.params.email;
@@ -239,9 +244,6 @@ app.use((err, req, res, next) => {
 });
 
 
-app.get("/", (req, res) => {
-    res.json("Running");
-});
 
 app.listen(port, () => {
     console.log("Running Project at port", port);
