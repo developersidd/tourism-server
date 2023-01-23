@@ -14,18 +14,18 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-/*// firebase admin initialize 
+// firebase admin initialize 
 let serviceAccount = require("./ab_tourism.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
-*/
+
 // data Base related Functionality
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.minbj.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-/*async function verifyToken(req, res, next) {
+async function verifyToken(req, res, next) {
 
     if (req?.headers.authorization?.startsWith("Bearer ")) {
         const idToken = req.headers.authorization.split("Bearer ")[1];
@@ -39,7 +39,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
     }
     next();
 }
-*/
+
 client.connect();
 const database = client.db("AB_tourism");
 const Tourism_slider_data = database.collection("Torism_slider");
@@ -53,7 +53,7 @@ app.get("/", (req, res) => {
 });
 
 // get all booked tour
-app.get("/ordered_tour/:email",  async (req, res) => {
+app.get("/ordered_tour/:email", verifyToken, async (req, res) => {
     const email = req.params.email;
     //check user is authorized or not
     if (req?.decodedEmail === email) {
@@ -84,7 +84,7 @@ app.get("/tours", async (req, res) => {
 });
 
 //// get my_orders from db
-app.get("/users/:email",  async (req, res) => {
+app.get("/users/:email", verifyToken, async (req, res) => {
     const { email } = req.params;
     if (req?.decodedEmail === email) {
         const result = await clicked_collection.find({ email: email }).toArray();
@@ -95,7 +95,7 @@ app.get("/users/:email",  async (req, res) => {
 });
 
 // get a tour using id
-app.get("/single_pd/:id/:email",  async (req, res) => {
+app.get("/single_pd/:id/:email", verifyToken, async (req, res) => {
     const { id } = req.params;
     const email = req.params.email;
     if (req?.decodedEmail === email) {
@@ -107,7 +107,7 @@ app.get("/single_pd/:id/:email",  async (req, res) => {
 });
 
 // check admin role
-app.get("/check_admin/:email",  async (req, res) => {
+app.get("/check_admin/:email", verifyToken, async (req, res) => {
     const { email } = req.params;
     if (req.decodedEmail === email) {
         let isAdmin = false;
@@ -124,7 +124,7 @@ app.get("/check_admin/:email",  async (req, res) => {
 });
 
 // delete a tour
-app.delete("/:tourId/:email",  async (req, res) => {
+app.delete("/:tourId/:email", verifyToken, async (req, res) => {
     const id = req.params.tourId;
     const email = req.params.email;
     if (req?.decodedEmail === email) {
@@ -137,7 +137,7 @@ app.delete("/:tourId/:email",  async (req, res) => {
 });
 
 // delete a booked tour for admin
-app.delete("delete_tour_admin/:tourId/:email",  async (req, res) => {
+app.delete("delete_tour_admin/:tourId/:email", verifyToken, async (req, res) => {
     const id = req.params.tourId;
     const email = req.params.email;
 
@@ -176,7 +176,7 @@ app.put("/add_user", async (req, res) => {
 });
 
 // Make admin for admin
-app.put("/make_admin/:email",  async (req, res) => {
+app.put("/make_admin/:email", verifyToken, async (req, res) => {
     const email = req.params.email;
     const filter = { email: req.body?.email };
     const updateDoc = { $set: { role: "admin" } };
@@ -198,7 +198,7 @@ app.put("/make_admin/:email",  async (req, res) => {
 });
 
 // add a Order Collection 
-app.post("/add_a_collection/:email",  async (req, res) => {
+app.post("/add_a_collection/:email", verifyToken, async (req, res) => {
     const tour = req.body;
     const email = req.params.email;
     if (req.decodedEmail === email) {
@@ -210,7 +210,7 @@ app.post("/add_a_collection/:email",  async (req, res) => {
 });
 
 // add a tour for admin 
-app.post("/add_tour/:email",  async (req, res) => {
+app.post("/add_tour/:email", verifyToken, async (req, res) => {
     const newTour = req.body;
     const email = req.params.email;
     //check user is authorized or not
