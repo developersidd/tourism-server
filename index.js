@@ -10,12 +10,12 @@ require("dotenv").config();
 // Environment variables
 const port = process.env.PORT || 5000;
 
+// firebase admin initialize 
+let serviceAccount = JSON.parse(process.env.FIREBASE_ADMIN_TOKEN);
+
 // Middle Ware
 app.use(cors());
 app.use(express.json());
-
-// firebase admin initialize 
-let serviceAccount = require("./ab_tourism.json");
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
